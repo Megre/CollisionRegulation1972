@@ -23,6 +23,7 @@ public class SenseSimilarity {
 	
 	public float calculate() {
 		if(s1.equals(s2)) return 1;
+		if(s1.isEmpty() || s2.isEmpty()) return 0;
 		
 		words1 = s1.getWords();
 		words2 = s2.getWords();
@@ -48,7 +49,8 @@ public class SenseSimilarity {
 			partB += result;
 		}
 		
-		return (partA/countA + partB/countB) / 2;
+		final float score = (partA/countA + partB/countB) / 2;
+		return Float.isNaN(score) ? 0 : score;
 	}
 
 	private float similarity(int row, int column) {

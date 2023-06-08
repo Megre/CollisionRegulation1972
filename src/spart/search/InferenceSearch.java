@@ -1,9 +1,10 @@
 package spart.search;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import spart.parser.ASBlock;
 import spart.parser.ASSentence;
 
 /** 
@@ -14,24 +15,24 @@ import spart.parser.ASSentence;
  */
 public class InferenceSearch extends SearchMethod {
 
-	private static List<ASInference> defaultInferences = new ArrayList<ASInference>();
+	private static List<ASFact> facts = new ArrayList<ASFact>();
 	static {
-		registerInference("左舷受风的船应给他船让路", "两船在不同舷受风");
-		registerInference("上风船应给下风船让路", "两船在同舷受风");
+		registerFact("左舷受风的船应给他船让路", "两船在不同舷受风");
+		registerFact("上风船应给下风船让路", "两船在同舷受风");
 		
-		registerInference("船舶应给他船让路", "两船交叉相遇", "有碰撞危险", "有他船在本船右舷");
-		registerInference("应尽可能及早地采取大幅度的行动", "船舶应给他船让路");
+		registerFact("船舶应给他船让路", "两船交叉相遇", "有碰撞危险", "有他船在本船右舷");
+		registerFact("应尽可能及早地采取大幅度的行动", "船舶应给他船让路");
 	}
 	
-	private List<ASSentence> conditions;
+	private Set<ASSentence> conditions;
 	private List<ResultPair> resultList;
 	
-	public InferenceSearch(List<ASBlock> blockList) {
-		super(blockList);
+	public InferenceSearch(SearchEngine searchEngine) {
+		super(searchEngine);
 	}
 	
-	public static void registerInference(String conclusion, String... conditions) {
-		defaultInferences.add(new ASInference(conclusion, conditions));
+	public static void registerFact(String conclusion, String... conditions) {
+		facts.add(new ASFact(conclusion, conditions));
 	}
 
 	@Override
@@ -49,10 +50,10 @@ public class InferenceSearch extends SearchMethod {
 	private boolean search() {
 		boolean appendFlag = false;
 		
-		for(ASInference infer: defaultInferences) {
-			if(infer.infer(conditions)) {
-				if(appendCondition(infer.getConclusion())) {
-					resultList.add(new ResultPair(infer.getConclusion(), infer.getScore()));
+		for(ASFact fact: facts) {
+			if(fact.infer(conditions)) {
+				if(appendCondition(fact.getConclusion())) {
+					resultList.add(new ResultPair(fact.getConclusion(), fact.getScore()));
 					appendFlag = true;
 				}
 			}
@@ -69,9 +70,9 @@ public class InferenceSearch extends SearchMethod {
 	}
 	
 	private void makeConditions(String search) {
-		String[] condiArray = search.split("[；;，,、]");
+		String[] condiArray = search.split(ASSentence.SPLITTER);
 		
-		conditions = new ArrayList<ASSentence>();
+		conditions = new HashSet<ASSentence>();
 		for(String condi: condiArray) {
 			conditions.add(new ASSentence(condi));
 		}

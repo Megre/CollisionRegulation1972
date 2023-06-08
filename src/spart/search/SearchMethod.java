@@ -3,7 +3,6 @@ package spart.search;
 import java.util.List;
 
 import spart.parser.ASBlock;
-import spart.parser.ASList;
 import spart.parser.ASSentence;
 
 /** 
@@ -15,9 +14,11 @@ import spart.parser.ASSentence;
 public abstract class SearchMethod {
 	
 	protected List<ASBlock> blockList;
+	protected SearchEngine searchEngine;
 	
-	public SearchMethod(List<ASBlock> blockList) {
-		this.blockList = blockList;
+	public SearchMethod(SearchEngine searchEngine) {
+		this.blockList = searchEngine.getBlockList();
+		this.searchEngine = searchEngine;
 	}
 	
 	public abstract SearchResult search(String text);
@@ -27,14 +28,6 @@ public abstract class SearchMethod {
 		
 		if(block instanceof ASSentence) {
 			 sentence = (ASSentence) block;
-		}
-		else if(block instanceof ASList) {
-			ASList asList = ((ASList) block);
-			String prefix = asList.group(0);
-			if(prefix != null) {
-				String listContent = asList.getText().toString();
-				sentence = new ASSentence(listContent);
-			}
 		}
 		
 		return sentence;

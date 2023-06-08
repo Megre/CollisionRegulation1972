@@ -2,6 +2,7 @@ package spart.search;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import spart.parser.ASSentence;
 
@@ -11,7 +12,7 @@ import spart.parser.ASSentence;
  * @email megre@vip.qq.com
  * @version created on: 2023-05-05 11:39:08
  */
-public class ASInference {
+public class ASFact {
 
 	private static float minScore = 0.9f;
 	
@@ -19,7 +20,7 @@ public class ASInference {
 	private ASSentence conclusion;
 	private float score;
 	
-	public ASInference(String conclusion, String... conditions) {
+	public ASFact(String conclusion, String... conditions) {
 		this.conclusion = new ASSentence(conclusion);
 		buildSentences(conditions);
 	}
@@ -36,7 +37,7 @@ public class ASInference {
 		return score;
 	}
 	
-	public boolean infer(List<ASSentence> otherConditions) {
+	public boolean infer(Set<ASSentence> otherConditions) {
 		if(conditions.size() > otherConditions.size()) return false;
 	
 		for(ASSentence condi: conditions) {

@@ -6,7 +6,6 @@ import java.util.Map;
 import com.hankcs.hanlp.HanLP;
 import com.hankcs.hanlp.corpus.dependency.CoNll.CoNLLSentence;
 import com.hankcs.hanlp.corpus.dependency.CoNll.CoNLLWord;
-
 import spart.parser.ASSentence;
 import spart.py.HowNetTool;
 
@@ -17,8 +16,9 @@ import spart.py.HowNetTool;
  * @email megre@vip.qq.com
  * @version created on: 2023-04-18 09:44:38
  */
-public class StructureSimilarity {
-
+public class SemanticSimilarity {
+	private static final CoNLLWord ROOT = new CoNLLWord(0, "root", "n");
+	
 	private CoNLLSentence sA, sB;
 	private float similarity = -1;
 	private float[][] simMatrix;
@@ -26,7 +26,7 @@ public class StructureSimilarity {
 	private Map<String, Float> weightMap = new HashMap<String, Float>();
 	private int lenA, lenB;
 
-	public StructureSimilarity(CoNLLSentence s1, CoNLLSentence s2) {
+	public SemanticSimilarity(CoNLLSentence s1, CoNLLSentence s2) {
 		this.sA = s1;
 		this.sB = s2;
 	}
@@ -138,32 +138,33 @@ public class StructureSimilarity {
 		return tB(i).DEPREL;
 	}
 	
-	private String pA(int i) {
-		return tA(i).LEMMA;
+	private CoNLLWord pA(int i) {
+		return tA(i);
 	}
 	
-	private String pB(int i) {
-		return tB(i).LEMMA;
+	private CoNLLWord pB(int i) {
+		return tB(i);
 	}
 	
-	private String qA(int i) {
+	private CoNLLWord qA(int i) {
 		int head = tA(i).HEAD.ID;
-		if(head == 0) return "root";
+		if(head == 0) return ROOT;
 		
-		return tA(head).LEMMA;
+		return tA(head);
 	}
 	
-	private String qB(int i) {
+	private CoNLLWord qB(int i) {
 		int head = tB(i).HEAD.ID;
-		if(head == 0) return "root";
+		if(head == 0) return ROOT;
 		
-		return tB(head).LEMMA;
+		return tB(head);
 	}
 	
-	private float wordSim(String w1, String w2) {
-		float r = HowNetTool.newInstance().similarity(w1, w2);
+	private float wordSim(CoNLLWord w1, CoNLLWord w2) {
+		
+		float r = HowNetTool.newInstance().similarity(w1.LEMMA, w2.LEMMA);
 		if(r < 0) {
-			r = new ASSentence(w1).senseSimilarity(new ASSentence(w2));
+			r = new ASSentence(w1.LEMMA).senseSimilarity(new ASSentence(w2.LEMMA));
 		}
 		
 		return r < 0 ? 0 : r;
@@ -172,15 +173,15 @@ public class StructureSimilarity {
 	public static void main(String[] args) {
 		CoNLLSentence s1 = HanLP.parseDependency("他喝了一打汽水."),
 				s2 = HanLP.parseDependency("他喝了一打汽水.");
-		System.out.println(new StructureSimilarity(s1, s2).calculate());
+		System.out.println(new SemanticSimilarity(s1, s2).calculate());
 		
 		s2 = HanLP.parseDependency("我买了一瓶汽水.");
-		System.out.println(new StructureSimilarity(s1, s2).calculate());
+		System.out.println(new SemanticSimilarity(s1, s2).calculate());
 		
 		s2 = HanLP.parseDependency("我买了一打汽水.");
-		System.out.println(new StructureSimilarity(s1, s2).calculate());
+		System.out.println(new SemanticSimilarity(s1, s2).calculate());
 		
 		s2 = HanLP.parseDependency("我喝了一打汽水.");
-		System.out.println(new StructureSimilarity(s1, s2).calculate());
+		System.out.println(new SemanticSimilarity(s1, s2).calculate());
 	}
 }

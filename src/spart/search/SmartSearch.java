@@ -17,8 +17,8 @@ public class SmartSearch extends SearchMethod {
 	private ASTriple search;
 	private List<ResultPair> resultList;
 
-	public SmartSearch(List<ASBlock> blockList) {
-		super(blockList);
+	public SmartSearch(SearchEngine searchEngine) {
+		super(searchEngine);
 	}
 	
 	@Override

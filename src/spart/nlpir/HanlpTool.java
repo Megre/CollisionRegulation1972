@@ -15,6 +15,9 @@ import spart.parser.ASSentence;
  * @version created on: 2023-04-18 09:50:09
  */
 public class HanlpTool {
+	public static CoNLLSentence parseDependency(String sentence) {
+		return HanLP.parseDependency(sentence);
+	}
 	
 	public static CoNLLWord findRoot(CoNLLSentence sentence) {
 		for(CoNLLWord word: sentence.getWordArray()) {
@@ -50,9 +53,11 @@ public class HanlpTool {
 	}
 	
 	public static void main(String[] args) {
-		String text = "做完了作业.";
-		
-		CoNLLSentence result = HanLP.parseDependency(text);
+		String text;
+		CoNLLSentence result;
+				
+		text = "做完了作业.";
+		result = HanLP.parseDependency(text);
 		printSentence(result);
 		printRoot(result);
 		
@@ -62,6 +67,10 @@ public class HanlpTool {
 		result = HanLP.parseDependency(text);
 		printSentence(result);
 		printRoot(result);
+		
+		text = "指用机器推进的任何船舶";
+		result = HanLP.parseDependency(text);
+		printSentence(result);
 		
 	}
 }

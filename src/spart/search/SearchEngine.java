@@ -4,8 +4,11 @@ import java.io.InputStream;
 import java.util.List;
 
 import com.lingjoin.demo.NlpirMethod;
+
 import spart.parser.ASBlock;
+import spart.parser.ASSentence;
 import spart.parser.TextFileParser;
+import spart.py.HowNetTool;
 
 /** 
  * 
@@ -18,22 +21,31 @@ public class SearchEngine {
 	private static SearchEngine instance = new SearchEngine();
 	
 	private List<ASBlock> blockList;
+	private CoreWordMap coreWordMap;
 
 	private SearchEngine() {
-		
+		coreWordMap = new CoreWordMap();
 	}
 	
 	public static SearchEngine initiate(String textFilePath) {
-		TextFileParser parser = new TextFileParser(textFilePath);
-		instance.blockList = parser.parse();
-		return instance;
+		return initiate(new TextFileParser(textFilePath));
 	}
 	
-	public static SearchEngine initiate(InputStream inputStream) {
-        TextFileParser parser = new TextFileParser(inputStream);
-        instance.blockList = parser.parse();
-        return instance;
+	public static SearchEngine initiate(InputStream inputStream) {    
+        return initiate(new TextFileParser(inputStream));
     }
+	
+	private static SearchEngine initiate(TextFileParser fileParser) {
+        instance.blockList = fileParser.parse();
+        
+        // This may take more than 1 minute
+        System.out.println("preprocessing...");
+        instance.preprocess();
+        HowNetTool.newInstance();
+        System.out.println("preprocess finished");
+        
+        return instance;
+	}
 	
 	public static void exit() {
 		NlpirMethod.NLPIR_Exit();
@@ -43,15 +55,43 @@ public class SearchEngine {
 		return instance;
 	}
 	
+	public List<ASBlock> getBlockList() {
+		return blockList;
+	}
+	
+	public CoreWordMap getCoreWordMap() {
+		return coreWordMap;
+	}
+	
 	public SearchResult semanticSearch(String search) {
-		return new SemanticSearch(blockList).search(search);
+		return new SemanticSearch(this).search(search);
 	}
 	
 	public SearchResult smartQA(String search) {
-		return new SmartSearch(blockList).search(search);
+		return new SmartSearch(this).search(search);
 	}
 	
 	public SearchResult regulationInfer(String search) {
-		return new InferenceSearch(blockList).search(search);
+		return new InferenceSearch(this).search(search);
+	}
+	
+	private void preprocess() {
+		for(ASBlock block: blockList) {
+			preprocess(block);
+		}
+	}
+	
+	private void preprocess(ASBlock block) {
+		
+		if(block instanceof ASSentence) {
+			final ASSentence sentence = ((ASSentence) block);
+			sentence.preprocess();
+			
+			coreWordMap.put(sentence);
+		}
+		
+		for(ASBlock child: block.getContentList()) {
+			preprocess(child);
+		}
 	}
 }

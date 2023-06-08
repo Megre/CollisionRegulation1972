@@ -52,7 +52,10 @@ public class TextFileParser {
 				if(title == null) {
 					String[] sList = line.split("[。：]");
 					for(String s: sList) {
-						appendBlock(new ASSentence(s.trim()));
+						final String trimmed = s.trim();
+						if(trimmed.isEmpty()) continue;
+						
+						appendBlock(new ASSentence(trimmed));
 					}
 				}
 				else {

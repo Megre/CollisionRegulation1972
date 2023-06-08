@@ -2,6 +2,7 @@ package spart.search;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONArray;
@@ -17,10 +18,13 @@ public class SearchResult {
 	private List<ResultPair> resultList;
 	
 	public SearchResult(List<ResultPair> resultList) {
-		this.resultList = resultList;
+		HashSet<ResultPair> set = new HashSet<ResultPair>(resultList);		
+		this.resultList = new ArrayList<ResultPair>(set);
+		
 		this.resultList.sort(new Comparator<ResultPair>() {
-
 			public int compare(ResultPair o1, ResultPair o2) {
+				if(o1.getScore() == o2.getScore()) return 0;
+				
 				return o1.getScore() - o2.getScore() > 0 ? -1 : 1;
 			}
 

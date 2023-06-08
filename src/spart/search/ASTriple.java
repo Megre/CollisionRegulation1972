@@ -16,6 +16,7 @@ import spart.py.DSNFTriple;
  * @version created on: 2023-05-05 10:11:47
  */
 public class ASTriple {
+	private static final ASTriple EMPTY_TRIPLE = new ASTriple();
 	private static final String WILDCARD = "*";
 	
 	private String matchedThing;
@@ -50,7 +51,7 @@ public class ASTriple {
 			return new ASTriple(makeTing(subject.LEMMA), predicate.LEMMA, makeTing(object.LEMMA));
 		}
 		
-		return new ASTriple();
+		return EMPTY_TRIPLE;
 	}
 	
 	public boolean match(ASTriple triple) {
@@ -79,7 +80,7 @@ public class ASTriple {
 		return new ASSentence(text1).senseSimilarity(new ASSentence(text2)) >= 1.0f;
 	}
 	
-	private static final String[] keys = {"什么", "哪"};
+	private static final String[] keys = {"什么", "哪", "谁"};
 	private static String makeTing(String thing) {
 		
 		for(String key: keys) {

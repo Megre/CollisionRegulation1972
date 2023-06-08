@@ -12,8 +12,7 @@ import java.util.regex.Pattern;
 public class ASTitle extends ASBlock {
 
 	private String matcherRegex;
-	private String name;
-	private ASSentence text;
+	private ASSentence name, text;
 	private String levelID;
 	
 	private Pattern pattern;
@@ -35,7 +34,7 @@ public class ASTitle extends ASBlock {
 	}
 	
 	protected ASTitle clone(ASTitle newObj) {
-		newObj.matcher = matcher;
+		newObj.matcher = matcher;		
 		return newObj;
 	}
 	
@@ -60,12 +59,13 @@ public class ASTitle extends ASBlock {
 		this.levelID = levelID;
 	}
 
-	public String getName() {
+	public ASSentence getName() {
 		return name;
 	}
 	
 	public void setName(String name) {
-		this.name = name;
+		this.name = makeSentence(name);
+		getContentList().add(0, this.name);
 	}
 	
 	public ASSentence getText() {
@@ -73,7 +73,12 @@ public class ASTitle extends ASBlock {
 	}
 	
 	public void setText(String text) {
-		this.text = new ASSentence(text);
+		this.text = makeSentence(text);
+		getContentList().add(1, this.text);
+	}
+	
+	private ASSentence makeSentence(String text) {
+		return text.trim().isEmpty() ? ASSentence.EMPTY_SENTENCE : new ASSentence(text);
 	}
 
 	public String getMatcherRegex() {

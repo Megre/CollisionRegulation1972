@@ -10,14 +10,14 @@ import java.util.List;
  * @version created on: 2023-04-13 11:08:21
  */
 public class ASBlock {
-	private ASTitle parent;
+	private ASBlock parent;
 	private List<ASBlock> contentList = new ArrayList<ASBlock>();
 	
-	public ASTitle getParent() {
+	public ASBlock getParent() {
 		return parent;
 	}
 
-	public void setParent(ASTitle parent) {
+	public void setParent(ASBlock parent) {
 		this.parent = parent;
 	}	
 	
